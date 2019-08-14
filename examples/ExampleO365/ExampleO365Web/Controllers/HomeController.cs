@@ -1,4 +1,5 @@
 ﻿using AweCsome;
+using AweCsome.Interfaces;
 using Microsoft.SharePoint.Client;
 using System;
 using System.Collections.Generic;
@@ -13,22 +14,16 @@ namespace ExampleO365Web.Controllers
         [SharePointContextFilter]
         public ActionResult Index()
         {
-            User spUser = null;
-
             var spContext = SharePointContextProvider.Current.GetSharePointContext(HttpContext);
 
             using (var clientContext = spContext.CreateUserClientContextForSPHost())
             {
                 if (clientContext != null)
                 {
-                    var acsomPeople = new AweCsomePeople(clientContext);
-                    spUser = clientContext.Web.CurrentUser;
+                    IAweCsomePeople peopleSvc = new AweCsomePeople(clientContext);
+                    var existingUser = peopleSvc.GetSiteUserById(9);
 
-                    clientContext.Load(spUser, user => user.Title);
-
-                    clientContext.ExecuteQuery();
-
-                    ViewBag.UserName = spUser.Title;
+                    ViewBag.UserName = existingUser.Title;
                 }
             }
 
